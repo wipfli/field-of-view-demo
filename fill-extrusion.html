@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>Fill Extrusion | Field of View Demo</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <script src="https://unpkg.com/maplibre-gl@3.0.0-pre.5/dist/maplibre-gl.js"></script>
+    <link href="https://unpkg.com/maplibre-gl@3.0.0-pre.5/dist/maplibre-gl.css" rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+
+        #slidecontainer {
+            position: absolute;
+            background: #fff;
+            top: 0;
+            left: 0;
+            padding: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map"></div>
+    <div id="slidecontainer">
+        <input type="range" min="1" max="60" value="35" class="slider" id="myRange">
+        <p id="fov">fov: 35</p>
+    </div>
+    <script>
+        var map = new maplibregl.Map({
+            container: 'map', // container id
+            style: 'https://wipfli.github.io/swiss-map/style.json', // style URL
+            center: [-73.985667, 40.747266], // starting position [lng, lat]
+            zoom: 16, // starting zoom
+            pitch: 45,
+            minZoom: 1,
+            hash: true,
+        });
+        
+        map.addControl(new maplibregl.NavigationControl());
+
+        map.transform.fov = 35;
+        map.repaint = true;
+
+        var slider = document.getElementById("myRange");
+        var infoText = document.getElementById("fov")
+
+        slider.oninput = function () {
+            map.transform.fov = this.value;
+            map.repaint = true;
+            infoText.innerHTML = `fov: ${Math.round(map.transform.fov)}`
+        }
+    </script>
+
+</body>
+
+</html>
