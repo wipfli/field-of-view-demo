@@ -19,3 +19,9 @@ https://wipfli.github.io/field-of-view-demo/terrain3d
 <img src="screenshot-terrain3d.png" width=650>
 </a>
 
+### Interpolate with Pitch
+
+`currentFov = minFov + (maxFov - minFov) * pitch / thresholdPitch`
+
+https://wipfli.github.io/field-of-view-demo/interpolate
+
