@@ -1,82 +1,64 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-    <title>Terrain3D | Field of View Demo</title>
-    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
-    <script src="https://unpkg.com/maplibre-gl@3.0.0-pre.5/dist/maplibre-gl.js"></script>
-    <link href="https://unpkg.com/maplibre-gl@3.0.0-pre.5/dist/maplibre-gl.css" rel="stylesheet" />
+    <meta charset='utf-8'>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel='stylesheet' href='https://unpkg.com/maplibre-gl@5.12.0/dist/maplibre-gl.css' />
+    <script src='https://unpkg.com/maplibre-gl@5.12.0/dist/maplibre-gl.js'></script>
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-        }
-
-        html,
-        body,
-        #map {
-            height: 100%;
-        }
-
-        #slidecontainer {
+        body { margin: 0; padding: 0; }
+        html, body, #map { height: 100%; }
+        #fov-slider-container {
             position: absolute;
-            background: #fff;
-            top: 0;
-            left: 0;
+            top: 10px;
+            left: 10px;
             padding: 10px;
+            background: rgba(255,255,255,0.9);
+            font-family: sans-serif;
+            border-radius: 6px;
         }
     </style>
 </head>
-
 <body>
-    <div id='map'></div>
 
-    <div id="slidecontainer">
-        <input type="range" min="1" max="60" value="35" class="slider" id="myRange">
-        <p id="fov">fov: 35</p>
-    </div>
+<div id="map"></div>
 
-    <script src='https://unpkg.com/maplibre-gl@3.0.0-pre.3/dist/maplibre-gl.js'></script>
-    <script>
+<div id="fov-slider-container">
+    <label for="fovSlider">Vertical FOV: <span id="fovVal">35</span>°</label><br>
+    <input type="range" id="fovSlider" min="5" max="120" value="35">
+</div>
 
-        var map = window.map = new maplibregl.Map({
-            container: 'map',
-            zoom: 12.5,
-            center: [8.03101, 46.61407],
-            pitch: 65,
-            bearing: 130,
-            hash: true,
-            style: 'https://vectortiles.geo.admin.ch/styles/ch.swisstopo.leichte-basiskarte-imagery.vt/style.json',
-            maxZoom: 18,
-            maxPitch: 85
+<script>
+    const map = (window.map = new maplibregl.Map({
+        container: 'map',
+        zoom: 14,
+        center: [7.5, 46],
+        pitch: 70,
+        hash: true,
+        style: 'https://vectortiles.geo.admin.ch/styles/ch.swisstopo.imagerybasemap.vt/style.json',
+        maxPitch: 85,
+    }));
+
+    map.on('load', () => {
+        map.addSource('terrainSource',  {
+          type: 'raster-dem',
+          url: 'https://tiles.mapterhorn.com/tilejson.json',
         });
-
-        map.on('load', () => {
-            map.addSource('terrain', {
-                'type': 'raster-dem',
-                'tiles': ['https://vtc-cdn.maptoolkit.net/terrainrgb/{z}/{x}/{y}.webp'],
-                'encoding': 'mapbox',
-                'maxzoom': 14,
-                'minzoom': 4
-            });
-            map.setTerrain({ source: 'terrain', exaggeration: 0.33 });
+        map.setTerrain({
+          source: 'terrainSource',
+          exaggeration: 1
         });
+    });
 
+    const slider = document.getElementById('fovSlider');
+    const label = document.getElementById('fovVal');
 
-        map.addControl(new maplibregl.NavigationControl());
+    slider.addEventListener('input', () => {
+        const value = Number(slider.value);
+        label.textContent = value;
+        map.setVerticalFieldOfView(value);
+    });
+</script>
 
-        map.transform.fov = 35;
-        map.repaint = true;
-
-        var slider = document.getElementById("myRange");
-        var infoText = document.getElementById("fov")
-
-        slider.oninput = function () {
-            map.transform.fov = this.value;
-            map.repaint = true;
-            infoText.innerHTML = `fov: ${Math.round(map.transform.fov)}`
-        }
-    </script>
 </body>
-
 </html>
